@@ -28,9 +28,17 @@ HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/127.0.0.1 Safari/537.36"
+        "Chrome/122.0.6261.94 Safari/537.36"
     ),
-    "Accept-Language": "en-IN,en;q=0.9",
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "pragma": "no-cache",
+    "sec-fetch-dest": "document",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "none",
+    "sec-fetch-user": "?1",
+    "upgrade-insecure-requests": "1",
 }
 
 
@@ -59,7 +67,12 @@ def fetch_myntra_product(url: str) -> ProductResponse:
         )
 
     html = resp.text
-
+    
+    if "Access Denied" in html or "You don't have permission" in html:
+        raise HTTPException(
+        status_code=403,
+        detail="Myntra blocked the request (Access Denied). Try again or use another proxy."
+    )
     # 3. Parse HTML & locate the script that contains pdpData
     soup = BeautifulSoup(html, "lxml")
 
